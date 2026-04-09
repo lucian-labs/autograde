@@ -5,7 +5,7 @@ struct EditSettings: Equatable {
     var contrast: Float = 0.05
     var saturation: Float = -0.08
     var grain: Float = 0.18
-    var watermark: Bool = true
+    var watermark: Bool = false
     var watermarkText: String = "EL"
     var watermarkPosition: WatermarkPosition = .bottomRight
     var watermarkOpacity: Float = 0.65
