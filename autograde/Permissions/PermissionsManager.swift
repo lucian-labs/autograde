@@ -8,6 +8,7 @@ class PermissionsManager: ObservableObject {
 
     @Published var accessibilityGranted = false
     @Published var screenRecordingGranted = false
+    @Published var needsRelaunch = false
 
     var allGranted: Bool { accessibilityGranted && screenRecordingGranted }
     var needsSetup: Bool { !allGranted }
@@ -25,7 +26,26 @@ class PermissionsManager: ObservableObject {
 
     func requestScreenRecording() {
         CGRequestScreenCaptureAccess()
-        pollUntilGranted(\.screenRecordingGranted) { CGPreflightScreenCaptureAccess() }
+        // Screen recording requires relaunch — poll and flip needsRelaunch when granted
+        Task {
+            for _ in 0..<30 {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                if CGPreflightScreenCaptureAccess() {
+                    screenRecordingGranted = true
+                    needsRelaunch = true
+                    return
+                }
+            }
+        }
+    }
+
+    func relaunch() {
+        let url = Bundle.main.bundleURL
+        let proc = Process()
+        proc.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+        proc.arguments = [url.path]
+        try? proc.run()
+        NSApp.terminate(nil)
     }
 
     func openAccessibilitySettings() {

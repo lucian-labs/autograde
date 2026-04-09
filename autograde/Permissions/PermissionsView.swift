@@ -67,18 +67,30 @@ struct PermissionsView: View {
 
                 Spacer()
 
-                Button(manager.allGranted ? "Continue" : "Continue anyway") {
-                    onContinue()
+                if manager.needsRelaunch {
+                    Button("Relaunch to Apply") { manager.relaunch() }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.regular)
+                        .tint(.orange)
+                } else {
+                    Button(manager.allGranted ? "Continue" : "Continue anyway") {
+                        onContinue()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.regular)
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.regular)
-                .disabled(false) // always allow continue
             }
             .padding(16)
         }
         .frame(width: 420)
         .background(Color(nsColor: .windowBackgroundColor))
         .onAppear { manager.checkAll() }
+        .onChange(of: manager.needsRelaunch) { _, needs in
+            // Auto-relaunch if screen recording just got granted and accessibility was already good
+            if needs && manager.accessibilityGranted {
+                manager.relaunch()
+            }
+        }
     }
 }
 
