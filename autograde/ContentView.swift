@@ -2,7 +2,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct ContentView: View {
-    @StateObject private var vm = AutoGradeViewModel()
+    @ObservedObject var vm: AutoGradeViewModel
+    @EnvironmentObject var screenshotManager: ScreenshotManager
     @State private var isTargeted = false
 
     private let columns = [GridItem(.adaptive(minimum: 220, maximum: 280), spacing: 12)]
@@ -35,12 +36,26 @@ struct ContentView: View {
 
             Spacer()
 
-            if let msg = vm.exportMessage {
+            if let msg = screenshotManager.statusMessage ?? vm.exportMessage {
                 Text(msg)
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
                     .transition(.opacity)
             }
+
+            // Screenshot capture button
+            Button(action: {
+                Task { @MainActor in
+                    await screenshotManager.capture(
+                        settings: vm.screenshotSettings,
+                        outputFolder: vm.outputFolder
+                    )
+                }
+            }) {
+                Image(systemName: "camera.viewfinder")
+            }
+            .buttonStyle(ToolbarButtonStyle())
+            .help("Screenshot ⌘⇧G")
 
             if !vm.items.isEmpty {
                 Button("Auto All") { vm.applyAutoAll() }

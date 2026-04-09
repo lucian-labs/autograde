@@ -8,6 +8,7 @@ class AutoGradeViewModel: ObservableObject {
     @Published var isExporting = false
     @Published var exportMessage: String?
     @Published var globalSettings: EditSettings = .autoMode
+    @Published var screenshotSettings: EditSettings = .autoMode
 
     var supportedTypes: [UTType] { [.image, .movie, .fileURL] }
 
