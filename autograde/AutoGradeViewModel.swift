@@ -4,11 +4,22 @@ import UniformTypeIdentifiers
 @MainActor
 class AutoGradeViewModel: ObservableObject {
     @Published var items: [MediaItem] = []
-    @Published var outputFolder: URL?
+    @Published var outputFolder: URL? {
+        didSet { saveOutputFolder() }
+    }
     @Published var isExporting = false
     @Published var exportMessage: String?
     @Published var globalSettings: EditSettings = .autoMode
     @Published var screenshotSettings: EditSettings = .autoMode
+
+    init() {
+        if let path = UserDefaults.standard.string(forKey: "outputFolderPath") {
+            let url = URL(fileURLWithPath: path)
+            if FileManager.default.fileExists(atPath: path) {
+                outputFolder = url
+            }
+        }
+    }
 
     var supportedTypes: [UTType] { [.image, .movie, .fileURL] }
 
@@ -109,5 +120,13 @@ class AutoGradeViewModel: ObservableObject {
 
     private func pickFolder() -> URL? {
         ExportManager.chooseOutputFolder()
+    }
+
+    private func saveOutputFolder() {
+        if let path = outputFolder?.path {
+            UserDefaults.standard.set(path, forKey: "outputFolderPath")
+        } else {
+            UserDefaults.standard.removeObject(forKey: "outputFolderPath")
+        }
     }
 }
