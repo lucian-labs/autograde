@@ -6,6 +6,7 @@ struct ContentView: View {
     @EnvironmentObject var screenshotManager: ScreenshotManager
     @State private var isTargeted = false
     @State private var selectedID: UUID?
+    @State private var selectedFolderURL: URL?
 
     private let columns = [GridItem(.adaptive(minimum: 220, maximum: 280), spacing: 12)]
 
@@ -97,10 +98,10 @@ struct ContentView: View {
 
     @ViewBuilder
     private var content: some View {
-        if vm.items.isEmpty {
-            emptyState
-        } else {
-            VStack(spacing: 0) {
+        VStack(spacing: 0) {
+            if vm.items.isEmpty {
+                emptyState
+            } else {
                 ScrollViewReader { proxy in
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 12) {
@@ -130,10 +131,10 @@ struct ContentView: View {
                         withAnimation { proxy.scrollTo(id, anchor: .center) }
                     }
                 }
-
-                Divider().opacity(0.3)
-                CarouselView(items: vm.items, selectedID: $selectedID)
             }
+
+            // Always-visible folder carousel
+            CarouselView(folderURL: vm.outputFolder, selectedURL: $selectedFolderURL)
         }
     }
 

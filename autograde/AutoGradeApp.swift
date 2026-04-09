@@ -3,16 +3,28 @@ import SwiftUI
 @main
 struct AutoGradeApp: App {
     @StateObject private var screenshotManager = ScreenshotManager.shared
+    @StateObject private var permissions = PermissionsManager.shared
     @StateObject private var vm = AutoGradeViewModel()
+    @State private var showPermissions = false
 
     var body: some Scene {
         WindowGroup {
             ContentView(vm: vm)
                 .frame(minWidth: 860, minHeight: 580)
                 .environmentObject(screenshotManager)
+                .environmentObject(permissions)
+                .sheet(isPresented: $showPermissions) {
+                    PermissionsView(manager: permissions) {
+                        showPermissions = false
+                        screenshotManager.startHotkeyListener { triggerCapture() }
+                    }
+                }
                 .onAppear {
-                    screenshotManager.startHotkeyListener {
-                        triggerCapture()
+                    permissions.checkAll()
+                    if permissions.needsSetup {
+                        showPermissions = true
+                    } else {
+                        screenshotManager.startHotkeyListener { triggerCapture() }
                     }
                 }
         }
@@ -25,7 +37,6 @@ struct AutoGradeApp: App {
             }
         }
 
-        // Menu bar icon — app stays alive and reachable without the main window
         MenuBarExtra("autograde", systemImage: "camera.viewfinder") {
             MenuBarView(vm: vm)
                 .environmentObject(screenshotManager)
