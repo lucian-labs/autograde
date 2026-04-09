@@ -14,6 +14,7 @@
 		3C0A8F042411EE4DD5C7644D /* AutoGradeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C45D1FBA1C4F7BE6062D14E /* AutoGradeApp.swift */; };
 		58F55B8637CD2FB4F71C1921 /* VideoProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439F3E58715BCBCBB52004CB /* VideoProcessor.swift */; };
 		72A506E2816BADAD61E69EF5 /* MediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6686F31A4DB5332F22C754 /* MediaItem.swift */; };
+		A552EE552C97CAE8DC636917 /* CarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC6025970C3C3F942C04A6 /* CarouselView.swift */; };
 		B5CB00B83A0BEA885FA3E967 /* ScreenshotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 642772B1979394838535A6BC /* ScreenshotManager.swift */; };
 		C984112CB46DC0BBF52531FE /* ExportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BF26AC68763C43E46F66DF /* ExportManager.swift */; };
 		D3576A0F52510FF2F7C38DD2 /* MediaCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B950BA52036741286C671B68 /* MediaCard.swift */; };
@@ -24,6 +25,7 @@
 /* Begin PBXFileReference section */
 		209070BA479A00A8B3404F2F /* EditSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSettings.swift; sourceTree = "<group>"; };
 		2A6686F31A4DB5332F22C754 /* MediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItem.swift; sourceTree = "<group>"; };
+		38DC6025970C3C3F942C04A6 /* CarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarouselView.swift; sourceTree = "<group>"; };
 		3D487AE5A415A8BCBD861070 /* AutoGradeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoGradeViewModel.swift; sourceTree = "<group>"; };
 		439F3E58715BCBCBB52004CB /* VideoProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoProcessor.swift; sourceTree = "<group>"; };
 		4C45D1FBA1C4F7BE6062D14E /* AutoGradeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoGradeApp.swift; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 		BB754DA8393C22FCB839B3A8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				38DC6025970C3C3F942C04A6 /* CarouselView.swift */,
 				B950BA52036741286C671B68 /* MediaCard.swift */,
 				EAE604B3DF17D4E79D8D48BF /* MenuBarView.swift */,
 			);
@@ -169,6 +172,7 @@
 			files = (
 				3C0A8F042411EE4DD5C7644D /* AutoGradeApp.swift in Sources */,
 				17A342114AAA08C3BDCC60E6 /* AutoGradeViewModel.swift in Sources */,
+				A552EE552C97CAE8DC636917 /* CarouselView.swift in Sources */,
 				2FA90BF2AB1E8C633E0B2B04 /* ContentView.swift in Sources */,
 				F8A9CA87AA2B9458F778E441 /* EditSettings.swift in Sources */,
 				C984112CB46DC0BBF52531FE /* ExportManager.swift in Sources */,

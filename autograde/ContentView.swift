@@ -5,6 +5,7 @@ struct ContentView: View {
     @ObservedObject var vm: AutoGradeViewModel
     @EnvironmentObject var screenshotManager: ScreenshotManager
     @State private var isTargeted = false
+    @State private var selectedID: UUID?
 
     private let columns = [GridItem(.adaptive(minimum: 220, maximum: 280), spacing: 12)]
 
@@ -99,18 +100,39 @@ struct ContentView: View {
         if vm.items.isEmpty {
             emptyState
         } else {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 12) {
-                    ForEach(vm.items) { item in
-                        MediaCard(
-                            item: item,
-                            onRemove: { vm.removeItem(item) },
-                            onExport: { vm.exportItem(item) },
-                            onReprocess: { vm.processItem(item) }
-                        )
+            VStack(spacing: 0) {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVGrid(columns: columns, spacing: 12) {
+                            ForEach(vm.items) { item in
+                                MediaCard(
+                                    item: item,
+                                    onRemove: { vm.removeItem(item) },
+                                    onExport: { vm.exportItem(item) },
+                                    onReprocess: { vm.processItem(item) }
+                                )
+                                .id(item.id)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .strokeBorder(Color.accentColor, lineWidth: 2)
+                                        .opacity(selectedID == item.id ? 1 : 0)
+                                )
+                                .onTapGesture { selectedID = item.id }
+                                .onChange(of: vm.items.count) { _, _ in
+                                    if !vm.items.contains(where: { $0.id == selectedID }) { selectedID = nil }
+                                }
+                            }
+                        }
+                        .padding(16)
+                    }
+                    .onChange(of: selectedID) { _, id in
+                        guard let id else { return }
+                        withAnimation { proxy.scrollTo(id, anchor: .center) }
                     }
                 }
-                .padding(16)
+
+                Divider().opacity(0.3)
+                CarouselView(items: vm.items, selectedID: $selectedID)
             }
         }
     }
