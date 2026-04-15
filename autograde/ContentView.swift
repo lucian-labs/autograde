@@ -1,12 +1,15 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+enum AppTab { case grade, resize }
+
 struct ContentView: View {
     @ObservedObject var vm: AutoGradeViewModel
     @EnvironmentObject var screenshotManager: ScreenshotManager
     @State private var isTargeted = false
     @State private var selectedID: UUID?
     @State private var selectedFolderURL: URL?
+    @State private var activeTab: AppTab = .grade
 
     private let columns = [GridItem(.adaptive(minimum: 220, maximum: 280), spacing: 12)]
 
@@ -15,16 +18,37 @@ struct ContentView: View {
             Color(nsColor: .controlBackgroundColor).ignoresSafeArea()
 
             VStack(spacing: 0) {
-                toolbar
+                tabBar
                 Divider().opacity(0.3)
-                content
+                tabContent
             }
         }
         .onDrop(of: vm.supportedTypes, isTargeted: $isTargeted) { providers in
-            vm.handleDrop(providers: providers)
+            guard activeTab == .grade else { return false }
+            return vm.handleDrop(providers: providers)
         }
         .overlay(dropOverlay)
         .animation(.easeInOut(duration: 0.15), value: isTargeted)
+    }
+
+    // MARK: Tab bar
+
+    private var tabBar: some View {
+        HStack(spacing: 0) {
+            TabButton(label: "grade",  icon: "wand.and.stars",  tab: .grade,  active: activeTab) { activeTab = .grade }
+            TabButton(label: "resize", icon: "arrow.up.left.and.arrow.down.right", tab: .resize, active: activeTab) { activeTab = .resize }
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.top, 6)
+    }
+
+    @ViewBuilder
+    private var tabContent: some View {
+        switch activeTab {
+        case .grade:  gradeContent
+        case .resize: ResizeView(vm: vm)
+        }
     }
 
     // MARK: Toolbar
@@ -94,10 +118,10 @@ struct ContentView: View {
         .padding(.vertical, 10)
     }
 
-    // MARK: Content
+    // MARK: Grade content
 
     @ViewBuilder
-    private var content: some View {
+    private var gradeContent: some View {
         VStack(spacing: 0) {
             if vm.items.isEmpty {
                 emptyState
@@ -168,6 +192,33 @@ struct ContentView: View {
                 .padding(8)
                 .allowsHitTesting(false)
         }
+    }
+}
+
+// MARK: - Tab Button
+
+struct TabButton: View {
+    let label: String
+    let icon: String
+    let tab: AppTab
+    let active: AppTab
+    let action: () -> Void
+
+    var isActive: Bool { tab == active }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 5) {
+                Image(systemName: icon).font(.system(size: 11))
+                Text(label).font(.system(size: 12, weight: .medium, design: .monospaced))
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(isActive ? Color.primary.opacity(0.1) : .clear)
+            .foregroundStyle(isActive ? .primary : .secondary)
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
+        .buttonStyle(.plain)
     }
 }
 

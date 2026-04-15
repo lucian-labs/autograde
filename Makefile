@@ -5,8 +5,7 @@ PROJECT   = autograde.xcodeproj
 BUILD_DIR = .build
 APP_PATH  = $(BUILD_DIR)/Build/Products/Debug/$(APP).app
 
-# ── default ──────────────────────────────────────────────────────────────────
-.PHONY: all build run kill reset fresh clean regen
+.PHONY: all build run kill reset fresh clean regen bundle
 
 all: run
 
@@ -24,7 +23,7 @@ build: regen
 kill:
 	-pkill -x "$(APP)" 2>/dev/null; true
 
-# ── reset TCC permissions for this bundle ────────────────────────────────────
+# ── reset TCC permissions for this bundle ─────────────────────────────────────
 reset:
 	-tccutil reset Accessibility  $(BUNDLE_ID)
 	-tccutil reset ScreenCapture  $(BUNDLE_ID)
@@ -35,8 +34,22 @@ reset:
 run: kill build
 	open "$(APP_PATH)"
 
-# ── fresh: full clean + permission reset + run ───────────────────────────────
-# Use this when permissions are stale or you want a completely clean slate.
+# ── bundle: build a release .app and copy to ~/Desktop ────────────────────────
+bundle: regen
+	xcodebuild \
+	  -project $(PROJECT) \
+	  -scheme  $(SCHEME) \
+	  -configuration Release \
+	  -derivedDataPath $(BUILD_DIR) \
+	  build 2>&1 | tee /tmp/$(APP)-release.log \
+	  | grep --line-buffered -E 'error:|warning:|\*\* BUILD'
+	@RELEASE_APP="$(BUILD_DIR)/Build/Products/Release/$(APP).app"; \
+	 DEST="$(HOME)/Desktop/$(APP).app"; \
+	 rm -rf "$$DEST"; \
+	 cp -R "$$RELEASE_APP" "$$DEST"; \
+	 echo "Bundled → $$DEST"
+
+# ── fresh: full clean + permission reset + run ────────────────────────────────
 fresh: kill reset clean run
 
 # ── clean build artifacts ─────────────────────────────────────────────────────
